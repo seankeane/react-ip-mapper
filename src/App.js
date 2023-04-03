@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useTransition, startTransition} from 'react';
 import GMap from './GMap';
 import IPLoc from './IPLoc';
 import CSVReader from './CSVReader';
@@ -18,73 +18,80 @@ const loadGoogleMapScript = (callback) => {
     }
 }
 
-const handleUpload = async (results) => {
-    const data = results.data, headerRow = data[0];
-    const destInd = headerRow.indexOf("DestinationIP");
-    const sourceInd = headerRow.indexOf("SourceIP");
-
-    if (destInd < 0 || sourceInd < 0) {
-        console.error("CSV does not contain DestinationIP and SourceIP columns");
-    }
-
-    let ipList = [];
-    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
-
-    // Loop through all data except the header and add Destination and Source IP to an array
-    for (let i = 1; i < data.length; i++) {
-        let iSourceIP = data[i][sourceInd], iDestIP = data[i][destInd];
-        if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
-            ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
-        } else {
-            console.error(`Row SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP} contains an invalid IP`)
-        }
-    }
-
-    console.log('---------------------------');
-    console.log(ipList);
-    console.log('---------------------------');
-
-    await enrichGPS(ipList);
-}
-
-
-const enrichGPS = async (ipList) => {
-    for (let entry of ipList) {
-        const sourceData = await IPLoc(entry.SourceIP);
-        const destData = await IPLoc(entry.DestinationIP);
-        entry['SourceLat'] = sourceData.latitude;
-        entry['SourceLong'] = sourceData.longitude;
-        entry['SourceCity'] = sourceData.city;
-        entry['DestLat'] = destData.latitude;
-        entry['DestLong'] = destData.longitude;
-        entry['DestCity'] = destData.city;
-    }
-
-    console.log(ipList);
-
-}
-
 const App = () => {
     const [loadMap, setLoadMap] = useState(false);
+    const [isPending, startTransition] = useTransition();
+    const [step, setStep] = useState('upload');
 
-    useEffect(() => {
-        /*loadGoogleMapScript(() => {
-            setLoadMap(true)
-        });*/
-    }, []);
+    const handleUpload = async (results) => {
+        const data = results.data, headerRow = data[0];
+        const destInd = headerRow.indexOf("DestinationIP");
+        const sourceInd = headerRow.indexOf("SourceIP");
+
+        if (destInd < 0 || sourceInd < 0) {
+            console.error("CSV does not contain DestinationIP and SourceIP columns");
+        }
+
+        let ipList = [];
+        const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+
+        // Loop through all data except the header and add Destination and Source IP to an array
+        for (let i = 1; i < data.length; i++) {
+            let iSourceIP = data[i][sourceInd], iDestIP = data[i][destInd];
+            if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
+                ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
+            } else {
+                console.error(`Row SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP} contains an invalid IP`)
+            }
+        }
+
+        console.log('---------------------------');
+        console.log(ipList);
+        console.log('---------------------------');
+
+        await enrichGPS(ipList);
+    }
+
+    const enrichGPS = async (ipList) => {
+        for (let entry of ipList) {
+            const sourceData = await IPLoc(entry.SourceIP);
+            const destData = await IPLoc(entry.DestinationIP);
+            entry['SourceLat'] = sourceData.latitude;
+            entry['SourceLong'] = sourceData.longitude;
+            entry['SourceCity'] = sourceData.city;
+            entry['DestLat'] = destData.latitude;
+            entry['DestLong'] = destData.longitude;
+            entry['DestCity'] = destData.city;
+        }
+
+        console.log(ipList);
+        startTransition(() => {
+            setStep('map');
+            loadGoogleMapScript(() => {
+                setLoadMap(true)
+            });
+        });
+
+    }
 
     return (
         <div className="App">
+        {step === 'upload' && <div>
+            {step === 'upload' && <h2>Test</h2>}
             <h2>IP Mapper</h2>
             <br />
             <CSVReader handler={handleUpload}/>
+        </div>}
+        {step === 'map' && <div>
+            <h4>Mapped IPs</h4>
+            {!loadMap ? <div>Loading...</div> : <GMap />}
+        </div>}
         </div>
     );
 }
 
 export default App;
 
-//TODO: useEffect for IPLoc: https://react.dev/reference/react/useEffect
 
 /*
 Example Data:
@@ -115,13 +122,3 @@ Example Data:
 
 //https://codesandbox.io/s/kgs8wi?file=/App.js:385-445&utm_medium=sandpack
 //https://react.dev/reference/react/useTransition
-
-/*
-<div className="App">
-    <h4>Mapped IPs</h4>
-    {!loadMap ? <div>Loading...</div> : <GMap />}
-    <br />
-    <small><b>Note:</b> In order to make it work, you have to set the YOUR_GOOGLE_MAP_API_KEY in App.js file. </small>
-</div>
-
- */
