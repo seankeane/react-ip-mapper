@@ -5,7 +5,6 @@ import CSVReader from './CSVReader';
 
 // API key of the google map
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
-//const gps = IPLoc(['8.8.8.8']);
 
 // load google map script
 const loadGoogleMapScript = (callback) => {
@@ -19,7 +18,7 @@ const loadGoogleMapScript = (callback) => {
     }
 }
 
-const handleUpload = (results) => {
+const handleUpload = async (results) => {
     const data = results.data, headerRow = data[0];
     const destInd = headerRow.indexOf("DestinationIP");
     const sourceInd = headerRow.indexOf("SourceIP");
@@ -45,11 +44,7 @@ const handleUpload = (results) => {
     console.log(ipList);
     console.log('---------------------------');
 
-    enrichGPS(ipList).then((value) => {
-        console.log(value);
-        // Expected output: "Success!"
-    });
-
+    await enrichGPS(ipList);
 }
 
 
@@ -80,7 +75,7 @@ const App = () => {
 
     return (
         <div className="App">
-            <h4>Mapped IPs</h4>
+            <h2>IP Mapper</h2>
             <br />
             <CSVReader handler={handleUpload}/>
         </div>
@@ -90,3 +85,43 @@ const App = () => {
 export default App;
 
 //TODO: useEffect for IPLoc: https://react.dev/reference/react/useEffect
+
+/*
+Example Data:
+
+[
+    {
+        "SourceIP": "8.8.8.8",
+        "DestinationIP": "93.107.86.141",
+        "SourceLat": 37.405991,
+        "SourceLong": -122.078514,
+        "SourceCity": "Mountain View",
+        "DestLat": 53.273891,
+        "DestLong": -7.48889,
+        "DestCity": "Tullamore"
+    },
+    {
+        "SourceIP": "125.209.238.100",
+        "DestinationIP": "104.47.11.202",
+        "SourceLat": 37.43861,
+        "SourceLong": 127.137779,
+        "SourceCity": "Seongnam",
+        "DestLat": 52.374031,
+        "DestLong": 4.88969,
+        "DestCity": "Amsterdam"
+    }
+]
+ */
+
+//https://codesandbox.io/s/kgs8wi?file=/App.js:385-445&utm_medium=sandpack
+//https://react.dev/reference/react/useTransition
+
+/*
+<div className="App">
+    <h4>Mapped IPs</h4>
+    {!loadMap ? <div>Loading...</div> : <GMap />}
+    <br />
+    <small><b>Note:</b> In order to make it work, you have to set the YOUR_GOOGLE_MAP_API_KEY in App.js file. </small>
+</div>
+
+ */

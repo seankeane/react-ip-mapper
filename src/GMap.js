@@ -14,7 +14,8 @@ const GMap = () => {
         const drawMarker = (obj) => {
             const marker = new window.google.maps.Marker({
                 position: obj,
-                map: googleMap
+                map: googleMap,
+                //TODO title: https://developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions
             });
             return marker;
         }
@@ -22,7 +23,12 @@ const GMap = () => {
         const drawLine = (marker1, marker2) => {
             const line = new window.google.maps.Polyline({
                 path: [marker1, marker2],
-                map: googleMap
+                map: googleMap,
+                geodesic: true,
+                clickable: false
+                //strokeColor: ,
+                //strokeOpacity: ,
+                //strokeWeight:
             });
             return line;
         }
