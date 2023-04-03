@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import GMap from './GMap';
+import IPLoc from './IPLoc';
+import CSVReader from './CSVReader';
 
 // API key of the google map
 const GOOGLE_MAP_API_KEY = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
+//const gps = IPLoc(['8.8.8.8']);
 
 // load google map script
 const loadGoogleMapScript = (callback) => {
@@ -23,6 +26,7 @@ const App = () => {
         loadGoogleMapScript(() => {
             setLoadMap(true)
         });
+
     }, []);
 
     return (
@@ -30,7 +34,7 @@ const App = () => {
             <h4>Mapped IPs</h4>
             {!loadMap ? <div>Loading...</div> : <GMap />}
             <br />
-            <small><b>Note:</b> In order to make it work, you have to set the YOUR_GOOGLE_MAP_API_KEY in App.js file. </small>
+            <CSVReader/>
         </div>
     );
 }
