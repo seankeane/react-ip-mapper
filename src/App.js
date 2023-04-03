@@ -19,24 +19,74 @@ const loadGoogleMapScript = (callback) => {
     }
 }
 
+const handleUpload = (results) => {
+    const data = results.data, headerRow = data[0];
+    const destInd = headerRow.indexOf("DestinationIP");
+    const sourceInd = headerRow.indexOf("SourceIP");
+
+    if (destInd < 0 || sourceInd < 0) {
+        console.error("CSV does not contain DestinationIP and SourceIP columns");
+    }
+
+    let ipList = [];
+    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+
+    // Loop through all data except the header and add Destination and Source IP to an array
+    for (let i = 1; i < data.length; i++) {
+        let iSourceIP = data[i][sourceInd], iDestIP = data[i][destInd];
+        if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
+            ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
+        } else {
+            console.error(`Row SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP} contains an invalid IP`)
+        }
+    }
+
+    console.log('---------------------------');
+    console.log(ipList);
+    console.log('---------------------------');
+
+    enrichGPS(ipList).then((value) => {
+        console.log(value);
+        // Expected output: "Success!"
+    });
+
+}
+
+
+const enrichGPS = async (ipList) => {
+    for (let entry of ipList) {
+        const sourceData = await IPLoc(entry.SourceIP);
+        const destData = await IPLoc(entry.DestinationIP);
+        entry['SourceLat'] = sourceData.latitude;
+        entry['SourceLong'] = sourceData.longitude;
+        entry['SourceCity'] = sourceData.city;
+        entry['DestLat'] = destData.latitude;
+        entry['DestLong'] = destData.longitude;
+        entry['DestCity'] = destData.city;
+    }
+
+    console.log(ipList);
+
+}
+
 const App = () => {
     const [loadMap, setLoadMap] = useState(false);
 
     useEffect(() => {
-        loadGoogleMapScript(() => {
+        /*loadGoogleMapScript(() => {
             setLoadMap(true)
-        });
-
+        });*/
     }, []);
 
     return (
         <div className="App">
             <h4>Mapped IPs</h4>
-            {!loadMap ? <div>Loading...</div> : <GMap />}
             <br />
-            <CSVReader/>
+            <CSVReader handler={handleUpload}/>
         </div>
     );
 }
 
 export default App;
+
+//TODO: useEffect for IPLoc: https://react.dev/reference/react/useEffect

@@ -27,43 +27,12 @@ const styles = {
     }
 };
 
-export default function CSVReader() {
+export default function CSVReader(props) {
     const { CSVReader } = useCSVReader();
 
     return (
         <CSVReader
-            onUploadAccepted={(results) => {
-                const data = results.data, headerRow = data[0];
-                const destInd = headerRow.indexOf("DestinationIP");
-                const sourceInd = headerRow.indexOf("SourceIP");
-
-                if (destInd < 0 || sourceInd < 0) {
-                    console.error("CSV does not contain DestinationIP and SourceIP columns");
-                }
-
-                let ipList = [];
-                const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
-
-                // Loop through all data except the header and add Destination and Source IP to an array
-                for (let i = 1; i < data.length; i++) {
-                    let iSourceIP = data[i][sourceInd], iDestIP = data[i][destInd];
-                    if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
-                        ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
-                    } else {
-                        console.error(`Row SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP} contains an invalid IP`)
-                    }
-                }
-
-                console.log('---------------------------');
-                console.log(results);
-                console.log('---------------------------');
-
-                console.log('---------------------------');
-                console.log(ipList);
-                console.log('---------------------------');
-
-            }}
-        >
+            onUploadAccepted={props.handler}>
             {({
                   getRootProps,
                   acceptedFile,
