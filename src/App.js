@@ -54,7 +54,8 @@ const App = () => {
     }
 
     const enrichGPS = async (ipList) => {
-        const isDev = true;
+        const isDev = !true;
+        //TODO remove
         if (isDev) {
             ipList = [
                 {
