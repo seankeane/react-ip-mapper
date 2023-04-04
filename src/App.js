@@ -42,7 +42,7 @@ const App = () => {
             if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
                 ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
             } else {
-                console.log(`Row SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP} contains an invalid IP`)
+                console.log(`Skipping row (SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP}) due to invalid IP`)
             }
         });
 
@@ -78,13 +78,13 @@ const App = () => {
 
     return (
         <div className="App">
+            <div className="logo">IP Mapper</div><hr/>
             {step === 'upload' && <div>
-                <h2>File Upload</h2>
+                <h3 className="comp-header">File Upload</h3>
                 <CSVReader handler={handleUpload}/>
             </div>}
             {step === 'map' && <div>
-                <h4>Mapped IPs</h4>
-                <br/>
+                <h3>IP Map</h3>
                 {!loadMap ? <div>Loading...</div> : <GMap gpsData={gpsData}/>}
                 <br/>
                 <table>
