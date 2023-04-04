@@ -9,7 +9,7 @@ const loadGoogleMapScript = (callback) => {
         callback();
     } else {
         const googleMapScript = document.createElement("script");
-        googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}&libraries=geometry`;
+        googleMapScript.src = `https://maps.googleapis.com/maps/api/js?v=beta&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}&libraries=geometry`;
         window.document.body.appendChild(googleMapScript);
         googleMapScript.addEventListener("load", callback);
     }
