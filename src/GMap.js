@@ -6,19 +6,29 @@ const GMap = (props) => {
 
     useEffect(() => {
 
-        const drawMarker = (obj) => {
+        const drawMarker = (obj, label) => {
             return new window.google.maps.Marker({
                 position: obj,
-                map: googleMap
+                map: googleMap,
+                label: label
             });
         }
 
         const drawLine = (marker1, marker2) => {
             return new window.google.maps.Polyline({
                 path: [marker1, marker2],
+                icons: [
+                    {
+                        icon: {
+                            path: window.google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+                        },
+                        offset: "100%",
+                    },
+                ],
                 map: googleMap,
                 geodesic: true,
-                clickable: false
+                clickable: false,
+                strokeWeight: 2
             });
         }
 
@@ -39,8 +49,8 @@ const GMap = (props) => {
                 iSourceSummary = `Source: ${x.SourceIP} @ ${x.SourceCity}, ${x.SourceCountry}`,
                 iDestSummary = `Destination: ${x.DestinationIP} @ ${x.DestCity}, ${x.DestCountry}`
             ;
-            const sourceMarker = drawMarker(iSourceCrds);
-            const destMarker = drawMarker(iDestCrds);
+            const sourceMarker = drawMarker(iSourceCrds, "S");
+            const destMarker = drawMarker(iDestCrds, "D");
             bounds.extend(iSourceCrds);
             bounds.extend(iDestCrds);
             drawLine(iSourceCrds, iDestCrds);

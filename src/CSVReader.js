@@ -42,7 +42,7 @@ export default function CSVReader(props) {
                     <h4>Choose a .csv file to map:</h4>
                     <div style={styles.csvReader}>
                         <button type='button' {...getRootProps()} style={styles.browseFile}>
-                            Browse file
+                            Browse Files
                         </button>
                         <div style={styles.acceptedFile}>
                             {acceptedFile && acceptedFile.name}
