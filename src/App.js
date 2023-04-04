@@ -22,6 +22,7 @@ const App = () => {
     const [loadMap, setLoadMap] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [step, setStep] = useState('upload');
+    const [gpsData, setGpsData] = useState([]);
 
     const handleUpload = async (results) => {
         const data = results.data, headerRow = data[0];
@@ -65,6 +66,7 @@ const App = () => {
         }
 
         console.log(ipList);
+        setGpsData(ipList);
         startTransition(() => {
             setStep('map');
             loadGoogleMapScript(() => {
@@ -76,16 +78,43 @@ const App = () => {
 
     return (
         <div className="App">
-        {step === 'upload' && <div>
-            {step === 'upload' && <h2>Test</h2>}
-            <h2>IP Mapper</h2>
-            <br />
-            <CSVReader handler={handleUpload}/>
-        </div>}
-        {step === 'map' && <div>
-            <h4>Mapped IPs</h4>
-            {!loadMap ? <div>Loading...</div> : <GMap />}
-        </div>}
+            {step === 'upload' && <div>
+                <h2>IP Mapper</h2>
+                <br />
+                <CSVReader handler={handleUpload}/>
+            </div>}
+            {step === 'map' && <div>
+                <h4>Mapped IPs</h4>
+                <br />
+                {!loadMap ? <div>Loading...</div> : <GMap />}
+                <br />
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Source IP</th>
+                        <th>Source Co-ords</th>
+                        <th>Source City</th>
+                        <th>Destination IP</th>
+                        <th>Destination Co-ords</th>
+                        <th>Destination City</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {gpsData.map((val, key) => {
+                        return (
+                            <tr key={key}>
+                                <td>{val.SourceIP}</td>
+                                <td>{val.SourceLong}, {val.SourceLat}</td>
+                                <td>{val.SourceCity}</td>
+                                <td>{val.DestinationIP}</td>
+                                <td>{val.DestLat}, {val.DestLong}</td>
+                                <td>{val.DestCity}</td>
+                            </tr>
+                        )
+                    })}
+                    </tbody>
+                </table>
+            </div>}
         </div>
     );
 }
