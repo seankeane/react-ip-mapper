@@ -48,7 +48,7 @@ export default function CSVReader(props) {
                             {acceptedFile && acceptedFile.name}
                         </div>
                     </div>
-                    <h5>Note: the file must be a .csv comma-separate file and contain the headers "Destination IP" and "Source IP". These columns should contain IPv4 addresses.</h5>
+                    <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
                     <ProgressBar style={styles.progressBarBackgroundColor} />
                 </>
             )}

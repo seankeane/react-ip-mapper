@@ -56,14 +56,20 @@ const App = () => {
         for (let entry of ipList) {
             const sourceData = await IPLoc(entry.SourceIP);
             const destData = await IPLoc(entry.DestinationIP);
-            entry['SourceLat'] = sourceData.latitude;
-            entry['SourceLong'] = sourceData.longitude;
-            entry['SourceCity'] = sourceData.city;
-            entry['DestLat'] = destData.latitude;
-            entry['DestLong'] = destData.longitude;
-            entry['DestCity'] = destData.city;
-        }
 
+            if (sourceData.city === '-' || destData.city === '-') {
+                console.log(`Record ${entry} is not a public IP`);
+            } else {
+                entry['SourceLat'] = sourceData.latitude;
+                entry['SourceLong'] = sourceData.longitude;
+                entry['SourceCity'] = sourceData.city;
+                entry['SourceCountry'] = sourceData.country_code;
+                entry['DestLat'] = destData.latitude;
+                entry['DestLong'] = destData.longitude;
+                entry['DestCity'] = destData.city;
+                entry['DestCountry'] = destData.country_code;
+            }
+        }
         console.log(ipList);
 
         setGpsData(ipList);
@@ -92,10 +98,10 @@ const App = () => {
                     <tr>
                         <th>Source IP</th>
                         <th>Source Co-ords</th>
-                        <th>Source City</th>
+                        <th>Source Location</th>
                         <th>Destination IP</th>
                         <th>Destination Co-ords</th>
-                        <th>Destination City</th>
+                        <th>Destination Location</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -104,10 +110,10 @@ const App = () => {
                             <tr key={key}>
                                 <td>{val.SourceIP}</td>
                                 <td>{val.SourceLat}, {val.SourceLong}</td>
-                                <td>{val.SourceCity}</td>
+                                <td>{val.SourceCity}, {val.SourceCountry}</td>
                                 <td>{val.DestinationIP}</td>
                                 <td>{val.DestLong}, {val.DestLat}</td>
-                                <td>{val.DestCity}</td>
+                                <td>{val.DestCity}, {val.DestCountry}</td>
                             </tr>
                         )
                     })}

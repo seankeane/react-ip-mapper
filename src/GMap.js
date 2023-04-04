@@ -36,7 +36,8 @@ const GMap = (props) => {
         props.gpsData.map(x => {
             const iSourceCrds = {lat: x.SourceLat, lng: x.SourceLong},
                 iDestCrds = {lat: x.DestLat, lng: x.DestLong},
-                iSourceSummary = `Source: ${x.SourceIP} @ ${x.SourceCity}`, iDestSummary = `Destination: ${x.DestinationIP} @ ${x.DestCity}`
+                iSourceSummary = `Source: ${x.SourceIP} @ ${x.SourceCity}, ${x.SourceCountry}`,
+                iDestSummary = `Destination: ${x.DestinationIP} @ ${x.DestCity}, ${x.DestCountry}`
             ;
             const sourceMarker = drawMarker(iSourceCrds);
             const destMarker = drawMarker(iDestCrds);
