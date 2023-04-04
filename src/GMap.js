@@ -6,12 +6,11 @@ const GMap = (props) => {
 
     useEffect(() => {
 
-        const drawMarker = (obj, summary) => {
-            const marker = new window.google.maps.Marker({
+        const drawMarker = (obj) => {
+            return new window.google.maps.Marker({
                 position: obj,
                 map: googleMap
             });
-            return marker;
         }
 
         const drawLine = (marker1, marker2) => {
@@ -46,7 +45,6 @@ const GMap = (props) => {
             drawLine(iSourceCrds, iDestCrds);
             addInfoWindow(sourceMarker, iSourceSummary);
             addInfoWindow(destMarker, iDestSummary);
-
         });
 
         googleMap.fitBounds(bounds);

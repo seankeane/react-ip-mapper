@@ -40,6 +40,7 @@ export default function CSVReader(props) {
               }) => (
                 <>
                     <h4>Choose a .csv file to map:</h4>
+                    <h5>Note: the file must be a .csv comma-separate file and contain the headers "Destination IP" and "Source IP". These columns should contain IPv4 addresses.</h5>
                     <div style={styles.csvReader}>
                         <button type='button' {...getRootProps()} style={styles.browseFile}>
                             Browse file
