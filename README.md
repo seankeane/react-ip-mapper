@@ -1,7 +1,10 @@
 # React IP Mapper
-IP Mapper renders a map showing allows users to select a .csv file containing IP address data from their local machine an The app sends users a message via Slack with a summary of information about a movie retrieved from <a href="https://www.themoviedb.org/documentation/api" target="_blank">TMDB API</a>.
+## Overview
+Programs like Wireshark are used to log network activity and can export logs showing the source and destination IP associated with requests on a Network. Similarly, many SFTP servers have inbuilt logging that records the IP address associated with connections.
 
-### Pre-requisites
+IP Mapper allows users to select a .csv file from their local machine with data about network traffic. IP Mapped then request location information about IP addresses on the input file from <a href="https://apilayer.com/marketplace/ip_to_location-api" target="_blank">APILayer's IP to Location API</a> and generates a map showing the physical location of each source and destination IP. IP Mapper allow shows this information in table form.
+
+## Pre-requisites
 - A Google Maps API Key is required. See <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">Use API Keys</a> for more information.
 - The APILayer IP to Location API is used to retrieve location information for IPs. See <a href="https://apilayer.com/marketplace/ip_to_location-api" target="_blank">APILayer Info</a> for more information.
 
