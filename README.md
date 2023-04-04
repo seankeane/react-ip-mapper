@@ -28,6 +28,8 @@ When the app launches you will see a screen with a `Browse Files` input allowing
 
 <img src="screenshots/file_upload.png" alt="file_upload" width="100%"/>
 
+See `test_ip.csv` for example of how .csv should contain. Columns `"DestinationIP"` and `"SourceIP"` are required. All other headers/columns in the file will be ignored.
+
 Once you select your .csv file, the app will render a Google Map showing the mapped Source and Destination IP address. You can click on the markers to see details about a specific location and all data is displayed in a table under the map.
 
 <img src="screenshots/ip_map.png" alt="ip_map" width="100%"/> 
