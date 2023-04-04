@@ -10,7 +10,7 @@ body {
 
 table {
     border: 2px solid forestgreen;
-    width: 80%;
+    width: 100%;
 }
 
 th {
@@ -19,4 +19,10 @@ th {
 
 td {
     text-align: center;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 600;
+    color: rgb(47, 141, 70);
 }
