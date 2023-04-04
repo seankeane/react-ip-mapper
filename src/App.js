@@ -54,16 +54,44 @@ const App = () => {
     }
 
     const enrichGPS = async (ipList) => {
-        for (let entry of ipList) {
-            const sourceData = await IPLoc(entry.SourceIP);
-            const destData = await IPLoc(entry.DestinationIP);
-            entry['SourceLat'] = sourceData.latitude;
-            entry['SourceLong'] = sourceData.longitude;
-            entry['SourceCity'] = sourceData.city;
-            entry['DestLat'] = destData.latitude;
-            entry['DestLong'] = destData.longitude;
-            entry['DestCity'] = destData.city;
+        const isDev = true;
+        if (isDev) {
+            ipList = [
+                {
+                    "SourceIP": "8.8.8.8",
+                    "DestinationIP": "93.107.86.141",
+                    "SourceLat": 37.405991,
+                    "SourceLong": -122.078514,
+                    "SourceCity": "Mountain View",
+                    "DestLat": 53.273891,
+                    "DestLong": -7.48889,
+                    "DestCity": "Tullamore"
+                },
+                {
+                    "SourceIP": "125.209.238.100",
+                    "DestinationIP": "104.47.11.202",
+                    "SourceLat": 37.43861,
+                    "SourceLong": 127.137779,
+                    "SourceCity": "Seongnam",
+                    "DestLat": 52.374031,
+                    "DestLong": 4.88969,
+                    "DestCity": "Amsterdam"
+                }
+            ];
+
+        } else {
+            for (let entry of ipList) {
+                const sourceData = await IPLoc(entry.SourceIP);
+                const destData = await IPLoc(entry.DestinationIP);
+                entry['SourceLat'] = sourceData.latitude;
+                entry['SourceLong'] = sourceData.longitude;
+                entry['SourceCity'] = sourceData.city;
+                entry['DestLat'] = destData.latitude;
+                entry['DestLong'] = destData.longitude;
+                entry['DestCity'] = destData.city;
+            }
         }
+
 
         console.log(ipList);
         setGpsData(ipList);
@@ -86,7 +114,7 @@ const App = () => {
             {step === 'map' && <div>
                 <h4>Mapped IPs</h4>
                 <br />
-                {!loadMap ? <div>Loading...</div> : <GMap />}
+                {!loadMap ? <div>Loading...</div> : <GMap gpsData={gpsData}/>}
                 <br />
                 <table>
                     <thead>
@@ -121,33 +149,6 @@ const App = () => {
 
 export default App;
 
-
-/*
-Example Data:
-
-[
-    {
-        "SourceIP": "8.8.8.8",
-        "DestinationIP": "93.107.86.141",
-        "SourceLat": 37.405991,
-        "SourceLong": -122.078514,
-        "SourceCity": "Mountain View",
-        "DestLat": 53.273891,
-        "DestLong": -7.48889,
-        "DestCity": "Tullamore"
-    },
-    {
-        "SourceIP": "125.209.238.100",
-        "DestinationIP": "104.47.11.202",
-        "SourceLat": 37.43861,
-        "SourceLong": 127.137779,
-        "SourceCity": "Seongnam",
-        "DestLat": 52.374031,
-        "DestLong": 4.88969,
-        "DestCity": "Amsterdam"
-    }
-]
- */
 
 //https://codesandbox.io/s/kgs8wi?file=/App.js:385-445&utm_medium=sandpack
 //https://react.dev/reference/react/useTransition
