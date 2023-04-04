@@ -1,7 +1,8 @@
-import React, {useState, useEffect, useTransition, startTransition} from 'react';
+import React, {useState} from 'react';
 import GMap from './GMap';
 import IPLoc from './IPLoc';
 import CSVReader from './CSVReader';
+import LoadingSpinner from "./LoadingSpinner";
 
 // load google map script
 const loadGoogleMapScript = (callback) => {
@@ -17,7 +18,6 @@ const loadGoogleMapScript = (callback) => {
 
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
-        [isPending, startTransition] = useTransition(),
         [step, setStep] = useState('upload'),
         [gpsData, setGpsData] = useState([]);
 
@@ -52,6 +52,7 @@ const App = () => {
     }
 
     const enrichGPS = async (ipList) => {
+        setStep('map');
 
         for (let entry of ipList) {
             const sourceData = await IPLoc(entry.SourceIP);
@@ -73,13 +74,9 @@ const App = () => {
         console.log(ipList);
 
         setGpsData(ipList);
-        startTransition(() => {
-            setStep('map');
-            loadGoogleMapScript(() => {
-                setLoadMap(true)
-            });
+        loadGoogleMapScript(() => {
+            setLoadMap(true)
         });
-
     }
 
     return (
@@ -91,9 +88,9 @@ const App = () => {
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
-                {!loadMap ? <div>Loading...</div> : <GMap gpsData={gpsData}/>}
+                {!loadMap ? <LoadingSpinner /> : <GMap gpsData={gpsData}/>}
                 <br/>
-                <table>
+                {!loadMap || <table>
                     <thead>
                     <tr>
                         <th>Source IP</th>
@@ -118,7 +115,7 @@ const App = () => {
                         )
                     })}
                     </tbody>
-                </table>
+                </table>}
             </div>}
         </div>
     );
