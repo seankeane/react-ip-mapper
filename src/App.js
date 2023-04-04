@@ -104,10 +104,10 @@ const App = () => {
                         return (
                             <tr key={key}>
                                 <td>{val.SourceIP}</td>
-                                <td>{val.SourceLong}, {val.SourceLat}</td>
+                                <td>{val.SourceLat}, {val.SourceLong}</td>
                                 <td>{val.SourceCity}</td>
                                 <td>{val.DestinationIP}</td>
-                                <td>{val.DestLat}, {val.DestLong}</td>
+                                <td>{val.DestLong}, {val.DestLat}</td>
                                 <td>{val.DestCity}</td>
                             </tr>
                         )
