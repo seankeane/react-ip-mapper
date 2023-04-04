@@ -27,12 +27,12 @@ const styles = {
     }
 };
 
-export default function CSVReader(props) {
+export default function CSVReader({handler}) {
     const { CSVReader } = useCSVReader();
 
     return (
         <CSVReader
-            onUploadAccepted={props.handler}>
+            onUploadAccepted={handler}>
             {({
                   getRootProps,
                   acceptedFile,

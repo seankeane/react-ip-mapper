@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const GMap = (props) => {
+const GMap = ({gpsData}) => {
     const googleMapRef = useRef(null);
     let googleMap = null;
 
@@ -43,7 +43,7 @@ const GMap = (props) => {
         googleMap = initGoogleMap();
 
         const bounds = new window.google.maps.LatLngBounds();
-        props.gpsData.map(x => {
+        gpsData.map(x => {
             const iSourceCrds = {lat: x.SourceLat, lng: x.SourceLong},
                 iDestCrds = {lat: x.DestLat, lng: x.DestLong},
                 iSourceSummary = `Source: ${x.SourceIP} @ ${x.SourceCity}, ${x.SourceCountry}`,
