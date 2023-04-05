@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import GMap from './GMap';
+import {GMap} from './GMap';
 import IPLoc from './IPLoc';
 import CSVReader from './CSVReader';
 import LoadingSpinner from "./LoadingSpinner";
@@ -71,6 +71,7 @@ const App = () => {
                 entry['DestCountry'] = destData.country_code;
             }
         }
+
         console.log(ipList);
 
         setGpsData(ipList);
@@ -81,14 +82,15 @@ const App = () => {
 
     return (
         <div className="App">
-            <div className="logo">IP Mapper</div><hr/>
+            <div className="logo">IP Mapper</div>
+            <hr/>
             {step === 'upload' && <div>
-                <h3 className="comp-header">File Upload</h3>
+                <h3>File Upload</h3>
                 <CSVReader handler={handleUpload}/>
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
-                {!loadMap ? <LoadingSpinner /> : <GMap gpsData={gpsData}/>}
+                {!loadMap ? <LoadingSpinner/> : <GMap gpsData={gpsData}/>}
                 <br/>
                 {!loadMap || <table>
                     <thead>
