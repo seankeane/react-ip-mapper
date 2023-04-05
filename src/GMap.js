@@ -35,15 +35,6 @@ const GMap = ({gpsData}) => {
         googleMap.fitBounds(bounds);
     }, []);
 
-    const parseCrds = (data, isSource) => {
-        return isSource ? {lat: data.SourceLat, lng: data.SourceLong} : {lat: data.DestLat, lng: data.DestLong};
-    }
-
-    const parseSummary = (data, isSource) => {
-        return isSource ? `Source: ${data.SourceIP} @ ${data.SourceCity}, ${data.SourceCountry}`
-            : `Destination: ${data.DestinationIP} @ ${data.DestCity}, ${data.DestCountry}`;
-    }
-
     const initGoogleMap = () => {
         return new window.google.maps.Map(googleMapRef.current, {
             center: { lat: 0.000, lng: 0.000 },
