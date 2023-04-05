@@ -73,17 +73,18 @@ const App = () => {
             }
         }
 
+        console.log(ipList);
+
         if (ipList.length === 0) {
             setStep('upload');
             setIsEmpty(true);
+        } else {
+            setIsEmpty(false);
+            setGpsData(ipList);
+            loadGoogleMapScript(() => {
+                setLoadMap(true)
+            });
         }
-
-        console.log(ipList);
-
-        setGpsData(ipList);
-        loadGoogleMapScript(() => {
-            setLoadMap(true)
-        });
     }
 
     return (
