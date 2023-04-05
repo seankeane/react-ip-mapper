@@ -16,10 +16,15 @@ const loadGoogleMapScript = (callback) => {
     }
 }
 
+const checkIsValidIPv4 = (ip) => {
+    return /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ip);
+}
+
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
         [step, setStep] = useState('upload'),
         [isEmpty, setIsEmpty] = useState(false),
+        [isHeaderMissing, setIsHeaderMissing] = useState(false),
         [gpsData, setGpsData] = useState([]);
 
     const handleUpload = async (results) => {
@@ -28,28 +33,30 @@ const App = () => {
             sourceInd = headerRow.indexOf("SourceIP");
 
         if (destInd < 0 || sourceInd < 0) {
+            setIsHeaderMissing(true);
             console.error("CSV does not contain DestinationIP and SourceIP columns");
+        } else {
+            setIsHeaderMissing(false);
+
+            const ipList = []; // Array to hold SourceIP and DestinationIP
+
+            // Loop through all data except the header and add Destination and Source IP to an array
+            // Remove header row
+            await data.shift();
+            // Loop through data from CSV and populate ipList array with SourceIP and DestinationIP values
+            data.forEach(i => {
+                let iSourceIP = i[sourceInd], iDestIP = i[destInd];
+                if (checkIsValidIPv4(iSourceIP) && checkIsValidIPv4(iDestIP)) {
+                    ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
+                } else {
+                    console.log(`Skipping row (SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP}) due to invalid IP`)
+                }
+            });
+
+            console.log(ipList);
+
+            await retrieveGPS(ipList);
         }
-
-        const ipList = [], // Array to hold SourceIP and DestinationIP
-            ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/; // Regex to test if a value is a valid IPv4
-
-        // Loop through all data except the header and add Destination and Source IP to an array
-        // Remove header row
-        await data.shift();
-        // Loop through data from CSV and populate ipList array with SourceIP and DestinationIP values
-        data.forEach(i => {
-            let iSourceIP = i[sourceInd], iDestIP = i[destInd];
-            if (ipRegex.test(iSourceIP) && ipRegex.test(iDestIP)) {
-                ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
-            } else {
-                console.log(`Skipping row (SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP}) due to invalid IP`)
-            }
-        });
-
-        console.log(ipList);
-
-        await retrieveGPS(ipList);
     }
 
     const retrieveGPS = async (ipList) => {
@@ -73,17 +80,18 @@ const App = () => {
             }
         }
 
+        console.log(ipList);
+
         if (ipList.length === 0) {
             setStep('upload');
             setIsEmpty(true);
+        } else {
+            setIsEmpty(false);
+            setGpsData(ipList);
+            loadGoogleMapScript(() => {
+                setLoadMap(true)
+            });
         }
-
-        console.log(ipList);
-
-        setGpsData(ipList);
-        loadGoogleMapScript(() => {
-            setLoadMap(true)
-        });
     }
 
     return (
@@ -95,6 +103,7 @@ const App = () => {
                 <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload}/>
                 {isEmpty && <div className='upload-validation'>Selected file does not have any valid rows.</div>}
+                {isHeaderMissing && <div className='upload-validation'>Selected file does not have "DestinationIP" and "SourceIP" headers.</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
             </div>}
             {step === 'map' && <div>
@@ -132,4 +141,4 @@ const App = () => {
     );
 }
 
-export default App;
+export { App, checkIsValidIPv4 };
