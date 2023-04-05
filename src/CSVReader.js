@@ -39,7 +39,6 @@ export default function CSVReader({handler}) {
                   ProgressBar
               }) => (
                 <>
-                    <h4>Choose a .csv file to map:</h4>
                     <div style={styles.csvReader}>
                         <button type='button' {...getRootProps()} style={styles.browseFile}>
                             Browse Files
@@ -48,7 +47,6 @@ export default function CSVReader({handler}) {
                             {acceptedFile && acceptedFile.name}
                         </div>
                     </div>
-                    <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
                     <ProgressBar style={styles.progressBarBackgroundColor} />
                 </>
             )}

@@ -19,6 +19,7 @@ const loadGoogleMapScript = (callback) => {
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
         [step, setStep] = useState('upload'),
+        [isEmpty, setIsEmpty] = useState(false),
         [gpsData, setGpsData] = useState([]);
 
     const handleUpload = async (results) => {
@@ -48,10 +49,10 @@ const App = () => {
 
         console.log(ipList);
 
-        await enrichGPS(ipList);
+        await retrieveGPS(ipList);
     }
 
-    const enrichGPS = async (ipList) => {
+    const retrieveGPS = async (ipList) => {
         setStep('map');
 
         for (let entry of ipList) {
@@ -72,6 +73,11 @@ const App = () => {
             }
         }
 
+        if (ipList.length === 0) {
+            setStep('upload');
+            setIsEmpty(true);
+        }
+
         console.log(ipList);
 
         setGpsData(ipList);
@@ -86,7 +92,10 @@ const App = () => {
             <hr/>
             {step === 'upload' && <div>
                 <h3>File Upload</h3>
+                <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload}/>
+                {isEmpty && <div className='upload-validation'>Selected file does not have any valid rows.</div>}
+                <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
