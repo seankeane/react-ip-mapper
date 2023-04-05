@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 const parseSummary = (data, isSource) => {
     return isSource ? `Source: ${data.SourceIP} @ ${data.SourceCity}, ${data.SourceCountry}`
-        : `Destination: ${data.DestinationIP} @ ${data.DestCity}, ${data.DestCountry}`;
+        : `Destination: ${data.DestIP} @ ${data.DestCity}, ${data.DestCountry}`;
 }
 
 const parseCrds = (data, isSource) => {

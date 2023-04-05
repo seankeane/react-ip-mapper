@@ -23,7 +23,7 @@ const checkIsValidIPv4 = (ip) => {
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
         [step, setStep] = useState('upload'),
-        [isEmpty, setIsEmpty] = useState(false),
+        [isFileEmpty, setIsFileEmpty] = useState(false),
         [isHeaderMissing, setIsHeaderMissing] = useState(false),
         [gpsData, setGpsData] = useState([]);
 
@@ -40,7 +40,6 @@ const App = () => {
 
             const ipList = []; // Array to hold SourceIP and DestinationIP
 
-            // Loop through all data except the header and add Destination and Source IP to an array
             // Remove header row
             await data.shift();
             // Loop through data from CSV and populate ipList array with SourceIP and DestinationIP values
@@ -60,34 +59,37 @@ const App = () => {
     }
 
     const retrieveGPS = async (ipList) => {
+        const gpsData = [];
         setStep('map');
 
-        for (let entry of ipList) {
+        for(let entry of ipList) {
             const sourceData = await IPLoc(entry.SourceIP);
             const destData = await IPLoc(entry.DestinationIP);
-
+            // check if location data is empty - this likely indicates the file included a private IP
             if (sourceData.city === '-' || destData.city === '-') {
                 console.log(`Record ${entry} is not a public IP`);
             } else {
-                entry['SourceLat'] = sourceData.latitude;
-                entry['SourceLong'] = sourceData.longitude;
-                entry['SourceCity'] = sourceData.city;
-                entry['SourceCountry'] = sourceData.country_code;
-                entry['DestLat'] = destData.latitude;
-                entry['DestLong'] = destData.longitude;
-                entry['DestCity'] = destData.city;
-                entry['DestCountry'] = destData.country_code;
+                gpsData.push({
+                    "SourceIP": sourceData.ip,
+                    "SourceLat": sourceData.latitude,
+                    "SourceLong": sourceData.longitude,
+                    "SourceCity": sourceData.city,
+                    "SourceCountry": sourceData.country_code,
+                    "DestIP": destData.ip,
+                    "DestLat": destData.latitude,
+                    "DestLong": destData.longitude,
+                    "DestCity": destData.city,
+                    "DestCountry": destData.country_code
+                });
             }
         }
 
-        console.log(ipList);
-
         if (ipList.length === 0) {
             setStep('upload');
-            setIsEmpty(true);
+            setIsFileEmpty(true);
         } else {
-            setIsEmpty(false);
-            setGpsData(ipList);
+            setIsFileEmpty(false);
+            setGpsData(gpsData);
             loadGoogleMapScript(() => {
                 setLoadMap(true)
             });
@@ -102,7 +104,7 @@ const App = () => {
                 <h3>File Upload</h3>
                 <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload}/>
-                {isEmpty && <div className='upload-validation'>Selected file does not have any valid rows.</div>}
+                {isFileEmpty && <div className='upload-validation'>Selected file does not have any valid rows.</div>}
                 {isHeaderMissing && <div className='upload-validation'>Selected file does not have "DestinationIP" and "SourceIP" headers.</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
             </div>}
@@ -128,7 +130,7 @@ const App = () => {
                                 <td>{val.SourceIP}</td>
                                 <td>{val.SourceLat}, {val.SourceLong}</td>
                                 <td>{val.SourceCity}, {val.SourceCountry}</td>
-                                <td>{val.DestinationIP}</td>
+                                <td>{val.DestIP}</td>
                                 <td>{val.DestLong}, {val.DestLat}</td>
                                 <td>{val.DestCity}, {val.DestCountry}</td>
                             </tr>
