@@ -15,7 +15,7 @@ const IPLoc = async (ip) => {
         }
         return response.json();
     } catch (error) {
-        console.error("There has been a problem with your fetch operation:", error);
+        console.error(`There was a problem fetching location data for ${ip}:`, error);
     }
 }
 

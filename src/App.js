@@ -20,17 +20,25 @@ const checkIsValidIPv4 = (ip) => {
     return /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ip);
 }
 
+const getIPProgressPercentage = (i, l) => {
+    return i / l * 100;
+}
+
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
         [step, setStep] = useState('upload'),
         [isFileEmpty, setIsFileEmpty] = useState(false),
         [isHeaderMissing, setIsHeaderMissing] = useState(false),
-        [gpsData, setGpsData] = useState([]);
+        [gpsData, setGpsData] = useState([]),
+        [progressIPLoc, setProgressIPLoc] = useState(0);
 
     const handleUpload = async (results) => {
         const data = results.data, headerRow = data[0],
             destInd = headerRow.indexOf("DestinationIP"),
             sourceInd = headerRow.indexOf("SourceIP");
+
+        !isHeaderMissing || setIsHeaderMissing(false);
+        !isFileEmpty || setIsFileEmpty(false);
 
         if (destInd < 0 || sourceInd < 0) {
             setIsHeaderMissing(true);
@@ -59,13 +67,16 @@ const App = () => {
     }
 
     const retrieveGPS = async (ipList) => {
-        const gpsData = [];
+        const  gpsData = [];
         setStep('map');
+        setProgressIPLoc(0);
 
-        for(let entry of ipList) {
+        for(let i = 0; i < ipList.length; i++) {
+            const entry = ipList[i];
+            setProgressIPLoc(getIPProgressPercentage(i, ipList.length));
             const sourceData = await IPLoc(entry.SourceIP);
             const destData = await IPLoc(entry.DestinationIP);
-            // check if location data is empty - this likely indicates the file included a private IP
+            // check if location data is empty/- this likely indicates the file included a private IP
             if (sourceData.city === '-' || destData.city === '-') {
                 console.log(`Record ${entry} is not a public IP`);
             } else {
@@ -83,6 +94,7 @@ const App = () => {
                 });
             }
         }
+        setProgressIPLoc(100);
 
         if (ipList.length === 0) {
             setStep('upload');
@@ -110,7 +122,7 @@ const App = () => {
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
-                {!loadMap ? <LoadingSpinner/> : <GMap gpsData={gpsData}/>}
+                {!loadMap ? <LoadingSpinner progress={progressIPLoc}/> : <GMap gpsData={gpsData}/>}
                 <br/>
                 {!loadMap || <table>
                     <thead>

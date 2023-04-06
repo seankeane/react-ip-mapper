@@ -54,3 +54,9 @@ td {
     align-items: center;
     height: 350px;
 }
+
+.progress-percentage {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
