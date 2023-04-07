@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 
 const parseSummary = (data, isSource) => {
-    return isSource ? `Source: ${data.SourceIP} @ ${data.SourceCity}, ${data.SourceCountry}`
-        : `Destination: ${data.DestIP} @ ${data.DestCity}, ${data.DestCountry}`;
+    return isSource ? `${data.SourceIP} @ ${data.SourceCity}, ${data.SourceCountry}`
+        : `${data.DestIP} @ ${data.DestCity}, ${data.DestCountry}`;
 }
 
 const parseCrds = (data, isSource) => {
@@ -22,8 +22,8 @@ const GMap = ({gpsData}) => {
                 iDestCrds = parseCrds(x, false),
                 iSourceSummary = parseSummary(x, true),
                 iDestSummary = parseSummary(x, false),
-                sourceMarker = drawMarker(iSourceCrds, googleMap, true),
-                destMarker = drawMarker(iDestCrds, googleMap,false);
+                sourceMarker = drawMarker(iSourceCrds, googleMap),
+                destMarker = drawMarker(iDestCrds, googleMap);
 
             bounds.extend(iSourceCrds);
             bounds.extend(iDestCrds);
@@ -37,26 +37,26 @@ const GMap = ({gpsData}) => {
 
     const initGoogleMap = () => {
         return new window.google.maps.Map(googleMapRef.current, {
-            center: { lat: 0.000, lng: 0.000 },
-            zoom: 2
+            center: {lat: 0.000, lng: 0.000},
+            zoom: 3
         });
     }
 
-    const drawMarker = (obj, gMap, isSource) => {
+    const drawMarker = (obj, gMap) => {
         return new window.google.maps.Marker({
             position: obj,
             map: gMap,
-            label: isSource ? 'S' : 'D'
+            icon: "https://maps.gstatic.com/mapfiles/ridefinder-images/mm_20_orange.png",
         });
     }
 
     const drawLine = (gMap, marker1, marker2) => {
-        return new window.google.maps.Polyline({
+        new window.google.maps.Polyline({
             path: [marker1, marker2],
             icons: [
                 {
                     icon: {
-                        path: window.google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+                        path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                     },
                     offset: "100%",
                 },
@@ -73,12 +73,12 @@ const GMap = ({gpsData}) => {
             const infoWindow = new window.google.maps.InfoWindow();
             infoWindow.setContent(summary);
             infoWindow.open(gMap, marker);
-        })
+        });
     }
 
     return <div
         ref={googleMapRef}
-        style={{ width: 'auto', height: 500 }}
+        style={{width: 'auto', height: 500}}
     />
 }
 

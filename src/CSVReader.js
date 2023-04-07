@@ -23,7 +23,7 @@ const styles = {
         padding: '0 20px',
     },
     progressBarBackgroundColor: {
-        backgroundColor: 'red',
+        backgroundColor: 'green',
     }
 };
 

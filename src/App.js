@@ -21,7 +21,7 @@ const checkIsValidIPv4 = (ip) => {
 }
 
 const getIPProgressPercentage = (i, l) => {
-    return i / l * 100;
+    return Math.round(i / l * 100);
 }
 
 const errorMessages = {
