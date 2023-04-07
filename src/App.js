@@ -81,14 +81,13 @@ const App = () => {
             const sourceData = await IPLoc(entry.SourceIP);
             const destData = await IPLoc(entry.DestinationIP);
 
-            console.log(`sourceData: ${sourceData}, destinationData: ${destData}`);
-
             if (sourceData.isError || destData.isError) {
                 console.log(`Errors encountered when retrieving location data for ${entry.SourceIP}->${entry.DestinationIP}. 
                 Details: ${sourceData.message}, ${destData.message}`);
                 apiError = true;
                 break;
             } else if (sourceData.city === '-' || destData.city === '-') {
+                // APILayer returns an object with no location data if you send a private IP address. Skip these rows.
                 console.log(`Record ${entry} is not a public IP`);
             } else {
                 gpsData.push({
