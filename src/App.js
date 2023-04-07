@@ -24,11 +24,16 @@ const getIPProgressPercentage = (i, l) => {
     return i / l * 100;
 }
 
+const errorMessages = {
+    missingHeaders: "The selected file does not have \"DestinationIP\" and \"SourceIP\" headers.",
+    noRecords: "The selected file does not have any rows of data with valid IPs.",
+    apiDown: "There is an issue retrieving location data from APILayer. Please try again later."
+};
+
 const App = () => {
     const [loadMap, setLoadMap] = useState(false),
-        [step, setStep] = useState('upload'),
-        [isFileEmpty, setIsFileEmpty] = useState(false),
-        [isHeaderMissing, setIsHeaderMissing] = useState(false),
+        [step, setStep] = useState("upload"),
+        [errorStatus, setErrorStatus] = useState("ok"),
         [gpsData, setGpsData] = useState([]),
         [progressIPLoc, setProgressIPLoc] = useState(0);
 
@@ -37,14 +42,12 @@ const App = () => {
             destInd = headerRow.indexOf("DestinationIP"),
             sourceInd = headerRow.indexOf("SourceIP");
 
-        !isHeaderMissing || setIsHeaderMissing(false);
-        !isFileEmpty || setIsFileEmpty(false);
+        setErrorStatus("ok");
 
         if (destInd < 0 || sourceInd < 0) {
-            setIsHeaderMissing(true);
+            setErrorStatus(errorMessages.missingHeaders);
             console.error("CSV does not contain DestinationIP and SourceIP columns");
         } else {
-            setIsHeaderMissing(false);
 
             const ipList = []; // Array to hold SourceIP and DestinationIP
 
@@ -70,14 +73,22 @@ const App = () => {
         const  gpsData = [];
         setStep('map');
         setProgressIPLoc(0);
+        let apiError = false;
 
         for(let i = 0; i < ipList.length; i++) {
             const entry = ipList[i];
             setProgressIPLoc(getIPProgressPercentage(i, ipList.length));
             const sourceData = await IPLoc(entry.SourceIP);
             const destData = await IPLoc(entry.DestinationIP);
-            // check if location data is empty/- this likely indicates the file included a private IP
-            if (sourceData.city === '-' || destData.city === '-') {
+
+            console.log(`sourceData: ${sourceData}, destinationData: ${destData}`);
+
+            if (sourceData.isError || destData.isError) {
+                console.log(`Errors encountered when retrieving location data for ${entry.SourceIP}->${entry.DestinationIP}. 
+                Details: ${sourceData.message}, ${destData.message}`);
+                apiError = true;
+                break;
+            } else if (sourceData.city === '-' || destData.city === '-') {
                 console.log(`Record ${entry} is not a public IP`);
             } else {
                 gpsData.push({
@@ -96,11 +107,13 @@ const App = () => {
         }
         setProgressIPLoc(100);
 
-        if (ipList.length === 0) {
+        if (apiError) {
+            setErrorStatus(errorMessages.apiDown);
             setStep('upload');
-            setIsFileEmpty(true);
+        } else if (gpsData.length === 0) {
+            setStep('upload');
+            setErrorStatus(errorMessages.noRecords)
         } else {
-            setIsFileEmpty(false);
             setGpsData(gpsData);
             loadGoogleMapScript(() => {
                 setLoadMap(true)
@@ -116,8 +129,7 @@ const App = () => {
                 <h3>File Upload</h3>
                 <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload}/>
-                {isFileEmpty && <div className='upload-validation'>Selected file does not have any valid rows.</div>}
-                {isHeaderMissing && <div className='upload-validation'>Selected file does not have "DestinationIP" and "SourceIP" headers.</div>}
+                {errorStatus !== 'ok' && <div className='upload-validation'>{errorStatus}</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
             </div>}
             {step === 'map' && <div>
