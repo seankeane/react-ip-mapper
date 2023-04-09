@@ -4,18 +4,6 @@ import IPLoc from './IPLoc';
 import CSVReader from './CSVReader';
 import LoadingSpinner from "./LoadingSpinner";
 
-// load google map script
-const loadGoogleMapScript = (callback) => {
-    if (typeof window.google === 'object' && typeof window.google.maps === 'object') {
-        callback();
-    } else {
-        const googleMapScript = document.createElement("script");
-        googleMapScript.src = `https://maps.googleapis.com/maps/api/js?v=beta&key=${process.env.REACT_APP_GOOGLE_MAP_API_KEY}&libraries=geometry`;
-        window.document.body.appendChild(googleMapScript);
-        googleMapScript.addEventListener("load", callback);
-    }
-}
-
 const checkIsValidIPv4 = (ip) => {
     return /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ip);
 }
@@ -114,9 +102,7 @@ const App = () => {
             setErrorStatus(errorMessages.noRecords)
         } else {
             setGpsData(gpsData);
-            loadGoogleMapScript(() => {
-                setLoadMap(true)
-            });
+            setLoadMap(true);
         }
     }
 
@@ -128,6 +114,7 @@ const App = () => {
                 <h3>File Upload</h3>
                 <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload}/>
+                <br/>
                 {errorStatus !== 'ok' && <div className='upload-validation'>{errorStatus}</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
             </div>}
