@@ -64,7 +64,7 @@ const GMap = ({gpsData}) => {
             map: gMap,
             geodesic: true,
             clickable: false,
-            strokeWeight: 2
+            strokeWeight: 2.5
         });
     }
 
