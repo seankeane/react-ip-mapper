@@ -116,7 +116,7 @@ const App = () => {
                 <CSVReader handler={handleUpload}/>
                 <br/>
                 {errorStatus !== 'ok' && <div className='upload-validation'>{errorStatus}</div>}
-                <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses.</h5>
+                <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses. Please use this <a href="./test_ip.csv" download>example.csv</a> for demo.</h5>
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
