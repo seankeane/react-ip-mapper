@@ -16,8 +16,7 @@ const getIPProgressPercentage = (i, l) => {
 const errorMessages = {
     missingHeaders: "The selected file does not have \"DestinationIP\" and \"SourceIP\" headers.",
     noRecords: "The selected file does not have any rows of data with valid IPs.",
-    apiDown: "There is an issue retrieving location data from APILayer. Please try again later.",
-    demoLimit: "This Heroku deployment is only for demo purposes and limits files to 10 rows. See info at https://github.com/seankeane/react-ip-mapper to setup your own deployment."
+    apiDown: "There is an issue retrieving location data from APILayer. Please try again later."
 };
 
 const App = () => {
@@ -34,13 +33,9 @@ const App = () => {
 
         setErrorStatus("ok");
 
-        // return error if DestinationIP or SourceIP column headers are missing
         if (destInd < 0 || sourceInd < 0) {
             setErrorStatus(errorMessages.missingHeaders);
             console.error("CSV does not contain DestinationIP and SourceIP columns");
-        // limits CSV to 10 rows of data - added for deployment to Heroku demo site
-        } else if (data.length > 11) {
-            setErrorStatus(errorMessages.demoLimit);
         } else {
 
             const ipList = []; // Array to hold SourceIP and DestinationIP
