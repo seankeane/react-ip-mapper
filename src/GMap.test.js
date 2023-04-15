@@ -1,6 +1,8 @@
 import React from "react";
-import { parseCrds, parseSummary } from "./GMap";
+import { GMap, parseCrds, parseSummary } from "./GMap";
 import '@testing-library/jest-dom';
+import {render, screen, waitFor} from "@testing-library/react";
+import * as ReactGoogleMapsApi from "@react-google-maps/api";
 
 test('test parse summary', async () => {
     // ARRANGE
@@ -19,7 +21,7 @@ test('test parse summary', async () => {
 
 
     // ASSERT
-    expect(result).toEqual('Source: 125.209.238.100 @ Seongnam, KR');
+    expect(result).toEqual("125.209.238.100 @ Seongnam, KR");
 });
 
 test('test parse co-ordinates', async () => {

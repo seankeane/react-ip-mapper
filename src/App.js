@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import {GMap} from './GMap';
+import React, { useState } from 'react';
+import { GMap } from './GMap';
 import IPLoc from './IPLoc';
 import CSVReader from './CSVReader';
 import LoadingSpinner from "./LoadingSpinner";
+import IPTable from "./IPTable";
 
 const checkIsValidIPv4 = (ip) => {
     return /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(ip);
@@ -45,7 +46,7 @@ const App = () => {
             data.forEach(i => {
                 let iSourceIP = i[sourceInd], iDestIP = i[destInd];
                 if (checkIsValidIPv4(iSourceIP) && checkIsValidIPv4(iDestIP)) {
-                    ipList.push({"SourceIP": iSourceIP, "DestinationIP": iDestIP});
+                    ipList.push({ "SourceIP": iSourceIP, "DestinationIP": iDestIP });
                 } else {
                     console.log(`Skipping row (SourceIP: ${iSourceIP}, DestinationIP: ${iDestIP}) due to invalid IP`)
                 }
@@ -58,12 +59,12 @@ const App = () => {
     }
 
     const retrieveGPS = async (ipList) => {
-        const  gpsData = [];
+        const gpsData = [];
         setStep('map');
         setProgressIPLoc(0);
         let apiError = false;
 
-        for(let i = 0; i < ipList.length; i++) {
+        for (let i = 0; i < ipList.length; i++) {
             const entry = ipList[i];
             setProgressIPLoc(getIPProgressPercentage(i, ipList.length));
             const sourceData = await IPLoc(entry.SourceIP);
@@ -109,45 +110,20 @@ const App = () => {
     return (
         <div className="App">
             <div className="logo">IP Mapper</div>
-            <hr/>
+            <hr />
             {step === 'upload' && <div>
                 <h3>File Upload</h3>
                 <h4>Choose a .csv file to map:</h4>
-                <CSVReader handler={handleUpload}/>
-                <br/>
+                <CSVReader handler={handleUpload} />
+                <br />
                 {errorStatus !== 'ok' && <div className='upload-validation'>{errorStatus}</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses. Please use this <a href="./test_ip.csv" download>example.csv</a> for demo.</h5>
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
-                {!loadMap ? <LoadingSpinner progress={progressIPLoc}/> : <GMap gpsData={gpsData}/>}
-                <br/>
-                {!loadMap || <table>
-                    <thead>
-                    <tr>
-                        <th>Source IP</th>
-                        <th>Source Co-ords</th>
-                        <th>Source Location</th>
-                        <th>Destination IP</th>
-                        <th>Destination Co-ords</th>
-                        <th>Destination Location</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {gpsData.map((val, key) => {
-                        return (
-                            <tr key={key}>
-                                <td>{val.SourceIP}</td>
-                                <td>{val.SourceLat}, {val.SourceLong}</td>
-                                <td>{val.SourceCity}, {val.SourceCountry}</td>
-                                <td>{val.DestIP}</td>
-                                <td>{val.DestLong}, {val.DestLat}</td>
-                                <td>{val.DestCity}, {val.DestCountry}</td>
-                            </tr>
-                        )
-                    })}
-                    </tbody>
-                </table>}
+                {!loadMap ? <LoadingSpinner progress={progressIPLoc} /> : <GMap gpsData={gpsData} />}
+                <br />
+                {!loadMap || <IPTable gpsData={gpsData} />}
             </div>}
         </div>
     );
