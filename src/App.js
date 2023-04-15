@@ -115,14 +115,12 @@ const App = () => {
                 <h3>File Upload</h3>
                 <h4>Choose a .csv file to map:</h4>
                 <CSVReader handler={handleUpload} />
-                <br />
                 {errorStatus !== 'ok' && <div className='upload-validation'>{errorStatus}</div>}
                 <h5>Note: the file must be a .csv comma-separate file and contain the headers "DestinationIP" and "SourceIP". These columns should contain IPv4 addresses. Please use this <a href="./test_ip.csv" download>example.csv</a> for demo.</h5>
             </div>}
             {step === 'map' && <div>
                 <h3>IP Map</h3>
                 {!loadMap ? <LoadingSpinner progress={progressIPLoc} /> : <GMap gpsData={gpsData} />}
-                <br />
                 {!loadMap || <IPTable gpsData={gpsData} />}
             </div>}
         </div>

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function LoadingSpinner({ gpsData }) {
     return (
-        <table>
+        <table className="ip-table">
             <thead>
                 <tr>
                     <th>Source IP</th>

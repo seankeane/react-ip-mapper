@@ -28,6 +28,7 @@ td {
 }
 
 .upload-validation {
+    margin-top: 20px;
     color: red;
 }
 
@@ -59,4 +60,8 @@ td {
     display: grid;
     justify-content: center;
     align-items: center;
+}
+
+.ip-table {
+    margin-top: 20px;
 }
